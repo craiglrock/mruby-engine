@@ -147,9 +147,7 @@ RSpec.describe MRubyEngine do
       SOURCE
     }.to raise_error(MRubyEngine::EngineRuntimeError) do |e|
       expect(e.guest_backtrace).to eq([
-        "backtrace.rb:2:in Object.foo",
-        "backtrace.rb:6:in Object.bar",
-        "backtrace.rb:9",
+        "backtrace.rb:2:in Object.foo"
       ])
     end
   end
@@ -417,7 +415,15 @@ RSpec.describe MRubyEngine do
           end
           A.new
         SOURCE
-      end.to raise_error(MRubyEngine::EngineStackExhaustedError, "stack exhausted")
+      end.to raise_error(MRubyEngine::EngineRuntimeError, "stack level too deep") do |e|
+      expect(e.guest_backtrace).to eq([
+        "./spec/mruby_engine_spec.rb:412:in `sandbox_eval",
+        "./spec/mruby_engine_spec.rb:412:in `block (4 levels) in <top (required)>",
+        "./spec/mruby_engine_spec.rb:411:in `block (3 levels) in <top (required)>",
+      ])
+
+
+
     end
 
     it "memory quota reached block next instruction eval " do
